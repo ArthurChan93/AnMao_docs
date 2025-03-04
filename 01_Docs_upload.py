@@ -5,8 +5,8 @@ import re
  
 # 页面基本设置
 st.set_page_config(page_title="安贸数据整合系统", layout="wide")
-st.title("📁 YAMAHA 供应商安贸审核资料")
-st.subheader("数据自动化处理系统", divider="rainbow")
+st.title("📁 安贸审核资料自动整合系统")
+st.subheader("YAMAHA 供应商数据自动化处理平台", divider="rainbow")
  
 # 初始化session state
 if 'mc_data' not in st.session_state:
@@ -18,11 +18,11 @@ if 'rel_data' not in st.session_state:
 with st.container(border=True):
     left_col, _ = st.columns([3, 1])
     with left_col:
-        st.subheader(":notebook_with_decorative_cover: MC Info Sheet 信息处理区", divider="blue")
+        st.subheader("⚙️ MC Info Sheet信息处理区", divider="blue")
  
         # Excel上传器（允许xls/xlsx/xlsm）
         mc_files = st.file_uploader(
-            "请上传MC Info excel文件（可多选）",
+            "请上传MC Info文件（可多选）",
             type=['xls', 'xlsx', 'xlsm'],
             accept_multiple_files=True,
             key="mc_uploader"
@@ -102,11 +102,11 @@ with st.container(border=True):
 with st.container(border=True):
     right_col, _ = st.columns([3, 1])
     with right_col:
-        st.subheader(":green_book: Relocation_sheet 信息处理区", divider="orange")
+        st.subheader("🚚 Relocation_sheet信息处理区", divider="orange")
  
         # Excel上传器（允许xls/xlsx/xlsm）
         rel_files = st.file_uploader(
-            "请上传Relocation excel文件（可多选）",
+            "请上传Relocation文件（可多选）",
             type=['xls', 'xlsx', 'xlsm'],
             accept_multiple_files=True,
             key="rel_uploader"
