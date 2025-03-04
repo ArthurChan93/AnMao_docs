@@ -31,17 +31,20 @@ with st.container(border=True):
 
         if mc_files:
             valid_ext_mc_files = [f for f in mc_files if f.name.lower().endswith(('.xls', '.xlsx', '.xlsm'))]
-            non_excel_files = [f.name for f in mc_files if f not in valid_ext_mc_files]
+            non_excel_files = [f for f in mc_files if f not in valid_ext_mc_files]
 
             if non_excel_files:
-                st.warning(f"已忽略非Excel文件：{', '.join(non_excel_files)}")
+                st.warning(f"已忽略 {len(non_excel_files)} 个非Excel文件。")
 
-            invalid_files = [f.name for f in valid_ext_mc_files if 'MC Info' not in f.name]
+            invalid_files = [f for f in valid_ext_mc_files if 'MC Info' not in f.name]
 
             if invalid_files:
-                st.error(f"❌ 不合格文件名：{', '.join(invalid_files)}")
-                st.stop()
-            elif valid_ext_mc_files:
+                st.error(f"❌ 有 {len(invalid_files)} 个文件不符合文件名要求，已忽略。")
+                # 过滤掉不合格文件
+                valid_ext_mc_files = [f for f in valid_ext_mc_files if 'MC Info' in f.name]
+
+            if valid_ext_mc_files:
+                st.success(f"有 {len(valid_ext_mc_files)} 个文件符合要求，开始处理。")
                 mc_data = []
                 for file in valid_ext_mc_files:
                     try:
@@ -66,7 +69,6 @@ with st.container(border=True):
                             row += 1
                     except Exception as e:
                         st.error(f"文件 {file.name} 读取失败：{str(e)}")
-                        st.stop()
 
                 st.session_state.mc_data = pd.DataFrame(mc_data)
                 st.dataframe(st.session_state.mc_data, use_container_width=True)
@@ -80,7 +82,7 @@ with st.container(border=True):
                         for col_num, col_name in enumerate(st.session_state.mc_data.columns):
                             max_len = max(st.session_state.mc_data[col_name].astype(str).str.len().max(), len(col_name)) + 2
                             worksheet.set_column(col_num, col_num, max_len)
-                    
+
                     st.download_button(
                         "💾 下载机台信息",
                         data=buffer.getvalue(),
@@ -103,18 +105,21 @@ with st.container(border=True):
 
         if rel_files:
             valid_ext_rel_files = [f for f in rel_files if f.name.lower().endswith(('.xls', '.xlsx', '.xlsm'))]
-            non_excel_files = [f.name for f in rel_files if f not in valid_ext_rel_files]
+            non_excel_files = [f for f in rel_files if f not in valid_ext_rel_files]
 
             if non_excel_files:
-                st.warning(f"已忽略非Excel文件：{', '.join(non_excel_files)}")
+                st.warning(f"已忽略 {len(non_excel_files)} 个非Excel文件。")
 
             pattern = re.compile(r'relocation', re.IGNORECASE)
-            invalid_files = [f.name for f in valid_ext_rel_files if not pattern.search(f.name)]
+            invalid_files = [f for f in valid_ext_rel_files if not pattern.search(f.name)]
 
             if invalid_files:
-                st.error(f"❌ 不合格文件名：{', '.join(invalid_files)}")
-                st.stop()
-            elif valid_ext_rel_files:
+                st.error(f"❌ 有 {len(invalid_files)} 个文件不符合文件名要求，已忽略。")
+                # 过滤掉不合格文件
+                valid_ext_rel_files = [f for f in valid_ext_rel_files if pattern.search(f.name)]
+
+            if valid_ext_rel_files:
+                st.success(f"有 {len(valid_ext_rel_files)} 个文件符合要求，开始处理。")
                 rel_data = []
                 for file in valid_ext_rel_files:
                     try:
@@ -143,7 +148,6 @@ with st.container(border=True):
                             row += 1
                     except Exception as e:
                         st.error(f"文件 {file.name} 读取失败：{str(e)}")
-                        st.stop()
 
                 st.session_state.rel_data = pd.DataFrame(rel_data)
                 st.dataframe(st.session_state.rel_data, use_container_width=True)
@@ -157,7 +161,7 @@ with st.container(border=True):
                         for col_num, col_name in enumerate(st.session_state.rel_data.columns):
                             max_len = max(st.session_state.rel_data[col_name].astype(str).str.len().max(), len(col_name)) + 2
                             worksheet.set_column(col_num, col_num, max_len)
-                    
+
                     st.download_button(
                         "💾 下载移机信息",
                         data=buffer.getvalue(),
@@ -170,7 +174,7 @@ with st.container(border=True):
     stock_col, _ = st.columns([3, 1])
     with stock_col:
         st.subheader("📦 Stock Machine处理区", divider="violet")
-        
+
         stock_files = st.file_uploader(
             "请上传Stock Machine文件（可多选）",
             type=['xls', 'xlsx', 'xlsm'],
@@ -180,18 +184,21 @@ with st.container(border=True):
 
         if stock_files:
             valid_stock_files = [f for f in stock_files if f.name.lower().endswith(('.xls', '.xlsx', '.xlsm'))]
-            non_excel_files = [f.name for f in stock_files if f not in valid_stock_files]
-            
+            non_excel_files = [f for f in stock_files if f not in valid_stock_files]
+
             if non_excel_files:
-                st.warning(f"已忽略非Excel文件：{', '.join(non_excel_files)}")
-            
+                st.warning(f"已忽略 {len(non_excel_files)} 个非Excel文件。")
+
             pattern = re.compile(r'(Stock Machine|二合一)', re.IGNORECASE)
-            invalid_files = [f.name for f in valid_stock_files if not pattern.search(f.name)]
-            
+            invalid_files = [f for f in valid_stock_files if not pattern.search(f.name)]
+
             if invalid_files:
-                st.error(f"❌ 不合格文件名：{', '.join(invalid_files)}")
-                st.stop()
-            else:
+                st.error(f"❌ 有 {len(invalid_files)} 个文件不符合文件名要求，已忽略。")
+                # 过滤掉不合格文件
+                valid_stock_files = [f for f in valid_stock_files if pattern.search(f.name)]
+
+            if valid_stock_files:
+                st.success(f"有 {len(valid_stock_files)} 个文件符合要求，开始处理。")
                 normal_files = [f for f in valid_stock_files if '二合一' not in f.name]
                 combined_files = [f for f in valid_stock_files if '二合一' in f.name]
 
@@ -202,7 +209,7 @@ with st.container(border=True):
                             df = pd.read_excel(file, header=None, engine='xlrd')
                         else:
                             df = pd.read_excel(file, header=None, engine='openpyxl')
-                        
+
                         # 增强括号匹配逻辑
                         c15 = str(df.iloc[14, 2])
                         matches = re.findall(r'[（(]([^）)]+)[）)]', c15)
@@ -211,15 +218,15 @@ with st.container(border=True):
                         else:
                             cd_code = ''
                             st.warning(f"文件 {file.name} 的C15单元格未找到有效括号内容：{c15}")
-                        
+
                         row = 20
                         while row < len(df):
                             if pd.isna(df.iloc[row, 8]) and pd.isna(df.iloc[row, 9]):
                                 break
-                            
+
                             b_col = df.iloc[row, 1]
                             e_col = df.iloc[row, 4]
-                            
+
                             if pd.notna(b_col) or pd.notna(e_col):
                                 normal_data.append({
                                     "CD Code": cd_code,
@@ -230,7 +237,6 @@ with st.container(border=True):
                             row += 1
                     except Exception as e:
                         st.error(f"文件 {file.name} 处理失败：{str(e)}")
-                        st.stop()
 
                 combined_data = []
                 for file in combined_files:
@@ -239,18 +245,18 @@ with st.container(border=True):
                             df = pd.read_excel(file, header=None, engine='xlrd')
                         else:
                             df = pd.read_excel(file, header=None, engine='openpyxl')
-                        
+
                         cd_end_user = df.iloc[14, 3]
                         cd_distributor = df.iloc[15, 3]
-                        
+
                         row = 21
                         while row < len(df):
                             if pd.isna(df.iloc[row, 9]):
                                 break
-                            
+
                             c_col = df.iloc[row, 2]
                             f_col = df.iloc[row, 5]
-                            
+
                             if pd.notna(c_col) or pd.notna(f_col):
                                 combined_data.append({
                                     "CD Code_End User": cd_end_user,
@@ -262,7 +268,6 @@ with st.container(border=True):
                             row += 1
                     except Exception as e:
                         st.error(f"文件 {file.name} 处理失败：{str(e)}")
-                        st.stop()
 
                 stock_df = pd.DataFrame()
                 if normal_data:
@@ -271,12 +276,12 @@ with st.container(border=True):
                 if combined_data:
                     combined_df = pd.DataFrame(combined_data)
                     stock_df = pd.concat([stock_df, combined_df], ignore_index=True)
-                
+
                 st.session_state.stock_data = stock_df
 
                 if not st.session_state.stock_data.empty:
                     st.dataframe(st.session_state.stock_data, use_container_width=True)
-                    
+
                     buffer = BytesIO()
                     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
                         if normal_data:
@@ -286,7 +291,7 @@ with st.container(border=True):
                             for col_num, col_name in enumerate(normal_df.columns):
                                 max_len = max(normal_df[col_name].astype(str).str.len().max(), len(col_name)) + 2
                                 worksheet.set_column(col_num, col_num, max_len)
-                        
+
                         if combined_data:
                             combined_df.to_excel(writer, sheet_name="二合一STOCK MACHINE SHIPPING INFO", index=False)
                             worksheet = writer.sheets["二合一STOCK MACHINE SHIPPING INFO"]
@@ -294,7 +299,7 @@ with st.container(border=True):
                             for col_num, col_name in enumerate(combined_df.columns):
                                 max_len = max(combined_df[col_name].astype(str).str.len().max(), len(col_name)) + 2
                                 worksheet.set_column(col_num, col_num, max_len)
-                    
+
                     st.download_button(
                         "💾 下载Stock machine数据",
                         data=buffer.getvalue(),
@@ -315,8 +320,10 @@ if st.session_state.mc_data is not None or st.session_state.rel_data is not None
                 sheets = {
                     "MC Info": st.session_state.mc_data,
                     "Relocation": st.session_state.rel_data,
-                    "STOCK MACHINE SHIPPING INFO": st.session_state.stock_data[st.session_state.stock_data['File_name'].str.contains('二合一') == False] if st.session_state.stock_data is not None else pd.DataFrame(),
-                    "二合一STOCK MACHINE SHIPPING INFO": st.session_state.stock_data[st.session_state.stock_data['File_name'].str.contains('二合一')] if st.session_state.stock_data is not None else pd.DataFrame()
+                    "STOCK MACHINE SHIPPING INFO": st.session_state.stock_data[
+                        st.session_state.stock_data['File_name'].str.contains('二合一') == False] if st.session_state.stock_data is not None else pd.DataFrame(),
+                    "二合一STOCK MACHINE SHIPPING INFO": st.session_state.stock_data[
+                        st.session_state.stock_data['File_name'].str.contains('二合一')] if st.session_state.stock_data is not None else pd.DataFrame()
                 }
 
                 for sheet_name, df in sheets.items():
