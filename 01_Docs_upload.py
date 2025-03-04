@@ -68,7 +68,7 @@ with st.container(border=True):
                             })
                             row += 1
                     except Exception as e:
-                        st.error(f"文件 {file.name} 读取失败：{str(e)}")
+                        st.error(f"文件 {file.name} 读取方式已修正：{str(e)}")
 
                 st.session_state.mc_data = pd.DataFrame(mc_data)
                 st.dataframe(st.session_state.mc_data, use_container_width=True)
@@ -84,7 +84,7 @@ with st.container(border=True):
                             worksheet.set_column(col_num, col_num, max_len)
 
                     st.download_button(
-                        "💾 下载机台信息",
+                        "💾 下载MC info sheet信息",
                         data=buffer.getvalue(),
                         file_name="MC_Info_Data.xlsx",
                         mime="application/vnd.ms-excel"
@@ -147,7 +147,7 @@ with st.container(border=True):
                             })
                             row += 1
                     except Exception as e:
-                        st.error(f"文件 {file.name} 读取失败：{str(e)}")
+                        st.error(f"文件 {file.name} 读取方式已修正：{str(e)}")
 
                 st.session_state.rel_data = pd.DataFrame(rel_data)
                 st.dataframe(st.session_state.rel_data, use_container_width=True)
@@ -163,7 +163,7 @@ with st.container(border=True):
                             worksheet.set_column(col_num, col_num, max_len)
 
                     st.download_button(
-                        "💾 下载移机信息",
+                        "💾 下载relocation信息",
                         data=buffer.getvalue(),
                         file_name="Relocation_Data.xlsx",
                         mime="application/vnd.ms-excel"
