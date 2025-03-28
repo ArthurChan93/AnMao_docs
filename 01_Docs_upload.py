@@ -6,7 +6,7 @@ import re
 # 页面基本设置
 st.set_page_config(page_title="安贸数据整合系统", layout="wide")
 st.title("📁 安贸审核资料自动整合系统")
-st.subheader("YAMAHA 供应商数据自动化处理平台", divider="rainbow")
+st.subheader("YAMAHA 供应商数据自动化处理平台(MC sheet/ Relocation sheet/ STK MACHINE SHIPPPING info sheet", divider="rainbow")
 
 # 初始化session state
 session_defaults = {
